@@ -1,5 +1,6 @@
 package mino;
 
+import main.KeyHandler;
 import main.PlayManager;
 
 import java.awt.*;
@@ -9,6 +10,7 @@ public class Mino {
     public Block b[] = new Block[4];
     public Block tempB[] = new Block[4];
     int autoDroptCounter = 0;
+    public int direction = 1;
 
     public void create (Color c) {
         b[0] = new Block(c);
@@ -22,9 +24,64 @@ public class Mino {
 
     }
     public void setXY(int x, int y) {}
-    public void updateXY(int direction) {}
+    public void updateXY(int direction) {
+
+        this.direction = direction;
+
+        b[0].x = tempB[0].x;
+        b[0].y = tempB[0].y;
+        b[1].x = tempB[1].x;
+        b[1].y = tempB[1].y;
+        b[2].x = tempB[2].x;
+        b[2].y = tempB[2].y;
+        b[3].x = tempB[3].x;
+        b[3].y = tempB[3].y;
+
+    }
+    public void getDirection1() {}
+    public void getDirection2() {}
+    public void getDirection3() {}
+    public void getDirection4() {}
+
 
     public void update() {
+
+        if(KeyHandler.upPressed) {
+            switch(direction){
+                case 1: getDirection2(); break;
+                case 2: getDirection3(); break;
+                case 3: getDirection4(); break;
+                case 4: getDirection1(); break;
+            }
+            KeyHandler.upPressed = false;
+        }
+        if(KeyHandler.downPressed) {
+            b[0].y += Block.SIZE;
+            b[1].y += Block.SIZE;
+            b[2].y += Block.SIZE;
+            b[3].y += Block.SIZE;
+            autoDroptCounter = 0;
+            KeyHandler.downPressed = false;
+
+        }
+        if(KeyHandler.leftPressed) {
+            b[0].x -= Block.SIZE;
+            b[1].x -= Block.SIZE;
+            b[2].x -= Block.SIZE;
+            b[3].x -= Block.SIZE;
+            autoDroptCounter = 0;
+            KeyHandler.leftPressed = false;
+        }
+        if(KeyHandler.rightPressed) {
+            b[0].x += Block.SIZE;
+            b[1].x += Block.SIZE;
+            b[2].x += Block.SIZE;
+            b[3].x += Block.SIZE;
+            autoDroptCounter = 0;
+            KeyHandler.rightPressed = false;
+
+        }
+
         autoDroptCounter++;
         if (autoDroptCounter == PlayManager.dropInterval) {
             b[0].y += Block.SIZE;
