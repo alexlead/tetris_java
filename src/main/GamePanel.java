@@ -1,3 +1,7 @@
+package main;
+
+import main.PlayManager;
+
 import javax.swing.*;
 import java.awt.*;
 
