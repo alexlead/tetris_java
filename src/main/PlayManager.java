@@ -3,6 +3,7 @@ package main;
 import mino.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -22,6 +23,12 @@ public class PlayManager {
     final int MINO_START_X;
     final int MINO_START_Y;
 
+    Mino nextMino;
+    final int NEXTMINO_X;
+    final int NEXTMINO_Y;
+    public static ArrayList<Block> staticBlocks = new ArrayList<>();
+
+
 
 //    Others
     public static int dropInterval = 60; // mino drops in every 60 frames
@@ -36,9 +43,14 @@ public class PlayManager {
         MINO_START_X = left_x + (WIDTH/2) - Block.SIZE;
         MINO_START_Y = top_y + Block.SIZE;
 
+        NEXTMINO_X = right_x + 175;
+        NEXTMINO_Y = top_y + 500;
+
 // Set the starting Mino
         currentMino = pickMino();
         currentMino.setXY(MINO_START_X, MINO_START_Y);
+        nextMino = pickMino();
+        nextMino.setXY(NEXTMINO_X, NEXTMINO_Y);
 
     }
 
@@ -58,7 +70,67 @@ public class PlayManager {
         return mino;
     }
     public void update() {
-        currentMino.update();
+
+//        check if current Mino is active
+        if (currentMino.active == false ) {
+            staticBlocks.add(currentMino.b[0]);
+            staticBlocks.add(currentMino.b[1]);
+            staticBlocks.add(currentMino.b[2]);
+            staticBlocks.add(currentMino.b[3]);
+
+            currentMino.deactivating = false;
+
+            currentMino = nextMino;
+            currentMino.setXY(MINO_START_X, MINO_START_Y);
+            nextMino = pickMino();
+            nextMino.setXY(NEXTMINO_X, NEXTMINO_Y);
+
+//            check lines which can be deleted
+            checkDelete ();
+
+        } else {
+            currentMino.update();
+        }
+    }
+
+    private void checkDelete () {
+        int x = left_x;
+        int y = top_y;
+        int blocksCount = 0;
+
+        while ( x < right_x && y < bottom_y ) {
+
+            for (int i = 0; i < staticBlocks.size(); i++ ) {
+                if ( staticBlocks.get(i).x == x && staticBlocks.get(i).y == y  ) {
+                    blocksCount ++;
+                }
+            }
+
+            x += Block.SIZE;
+            if (x == right_x) {
+
+//                we can delete the line if it has 12 blocks in line
+                if ( blocksCount == 12) {
+                    for (int i = staticBlocks.size()-1; i > -1; i--) {
+                        if (staticBlocks.get(i).y == y ) {
+                            staticBlocks.remove(i);
+                        }
+                    }
+//                    move blocks to line down
+                    for (int i = staticBlocks.size()-1; i > -1; i--) {
+                        if (staticBlocks.get(i).y < y ) {
+                            staticBlocks.get(i).y += Block.SIZE;
+                        }
+                    }
+
+
+                }
+
+                blocksCount = 0;
+                x = left_x ;
+                y += Block.SIZE;
+            }
+        }
     }
     public void draw(Graphics2D g2) {
 //Draw Play Area Frame
@@ -77,6 +149,11 @@ public class PlayManager {
 //        Draw the currentMino
         if(currentMino != null ) {
             currentMino.draw(g2);
+        }
+        nextMino.draw(g2);
+
+        for(int i = 0 ; i < staticBlocks.size(); i++) {
+            staticBlocks.get(i).draw(g2);
         }
 
 //        Draw Pause

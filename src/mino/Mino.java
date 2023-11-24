@@ -12,6 +12,10 @@ public class Mino {
     int autoDroptCounter = 0;
     public int direction = 1;
     boolean leftCollision, rightCollision, bottomCollision;
+public boolean active = true;
+public boolean deactivating;
+int deactivatingCounter = 0;
+
 
 
     public void create (Color c) {
@@ -55,6 +59,11 @@ if( leftCollision == false && rightCollision == false && bottomCollision == fals
         rightCollision = false;
         bottomCollision = false;
 
+        //        check static blocks collision
+        checkStaticBlocksCollision();
+
+
+
 //        Check frame collision
         for(int i = 0; i < b.length; i++ ) {
 //        Left wall
@@ -79,6 +88,9 @@ if( leftCollision == false && rightCollision == false && bottomCollision == fals
         rightCollision = false;
         bottomCollision = false;
 
+//        check static blocks collision
+        checkStaticBlocksCollision();
+
 //        Check frame collision
         for(int i = 0; i < tempB.length; i++ ) {
 //        Left wall
@@ -97,7 +109,34 @@ if( leftCollision == false && rightCollision == false && bottomCollision == fals
 
     }
 
+    public void checkStaticBlocksCollision () {
+        for (int i = 0; i < PlayManager.staticBlocks.size(); i++) {
+            int targetX = PlayManager.staticBlocks.get(i).x;
+            int targetY = PlayManager.staticBlocks.get(i).y;
+
+            for (int j = 0; j < b.length; j++) {
+//            check down
+                if(b[j].y + Block.SIZE == targetY && b[j].x == targetX) {
+                    bottomCollision = true;
+                }
+//            check left
+                if(b[j].x - Block.SIZE == targetX && b[j].y == targetY) {
+                    leftCollision = true;
+                }
+//            check right
+                if(b[j].x + Block.SIZE == targetX && b[j].y == targetY) {
+                    rightCollision = true;
+                }
+
+            }
+
+        }
+    }
     public void update() {
+
+        if (deactivating ) {
+            deactivating();
+        }
 
         if(KeyHandler.upPressed) {
             switch(direction){
@@ -142,6 +181,12 @@ if( leftCollision == false && rightCollision == false && bottomCollision == fals
 
         }
 
+        if(bottomCollision) {
+//            active = false;
+            deactivating = true;
+
+        } else {
+
         autoDroptCounter++;
         if (autoDroptCounter == PlayManager.dropInterval) {
             b[0].y += Block.SIZE;
@@ -151,8 +196,19 @@ if( leftCollision == false && rightCollision == false && bottomCollision == fals
             autoDroptCounter = 0;
 
         }
+        }
     }
 
+    public void deactivating () {
+        deactivatingCounter ++ ;
+        if (deactivatingCounter == 45) {
+            deactivatingCounter = 0;
+            checkMovementCollision();
+            if(bottomCollision) {
+                active = false;
+            }
+        }
+    }
     public void draw (Graphics2D g2) {
 
         int margin = 2;
