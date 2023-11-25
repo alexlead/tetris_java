@@ -1,5 +1,6 @@
 package mino;
 
+import main.GamePanel;
 import main.KeyHandler;
 import main.PlayManager;
 
@@ -146,6 +147,7 @@ if( leftCollision == false && rightCollision == false && bottomCollision == fals
                 case 4: getDirection1(); break;
             }
             KeyHandler.upPressed = false;
+            GamePanel.se.play(3, false);
         }
 
         checkMovementCollision();
@@ -182,6 +184,9 @@ if( leftCollision == false && rightCollision == false && bottomCollision == fals
         }
 
         if(bottomCollision) {
+            if(deactivating == false) {
+                GamePanel.se.play(4, false);
+            }
 //            active = false;
             deactivating = true;
 

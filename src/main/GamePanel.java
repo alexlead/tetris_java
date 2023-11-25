@@ -12,6 +12,11 @@ public class GamePanel extends JPanel implements Runnable {
     final int FPS = 60;
     Thread gameTread;
     PlayManager pm;
+    public static Sound music = new Sound();
+    public static Sound se = new Sound();
+
+
+
 
     public GamePanel () {
         this.setPreferredSize( new Dimension(WIDTH, HEIGHT));
@@ -29,6 +34,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void launchGame () {
         gameTread = new Thread(this);
         gameTread.start();
+        music.play(0, true);
+        music.loop();
     }
 
     @Override

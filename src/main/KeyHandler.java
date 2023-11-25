@@ -32,6 +32,12 @@ public static boolean upPressed, downPressed, leftPressed, rightPressed, pausePr
 
         if(code == KeyEvent.VK_SPACE) {
             pausePressed = !pausePressed;
+            if(pausePressed) {
+                GamePanel.music.play(0, true);
+                GamePanel.music.loop();
+            } else {
+                GamePanel.music.stop();
+            }
         }
 
 
