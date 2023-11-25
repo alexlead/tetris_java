@@ -28,10 +28,16 @@ public class PlayManager {
     final int NEXTMINO_Y;
     public static ArrayList<Block> staticBlocks = new ArrayList<>();
 
-
-
 //    Others
     public static int dropInterval = 60; // mino drops in every 60 frames
+
+//    Effect
+    boolean effectCounterOn;
+    int effectCounter;
+    ArrayList<Integer> effectY = new ArrayList<>();
+
+// GameOver
+    boolean gameOver;
 
 
     public PlayManager () {
@@ -78,6 +84,11 @@ public class PlayManager {
             staticBlocks.add(currentMino.b[2]);
             staticBlocks.add(currentMino.b[3]);
 
+            if(currentMino.b[0].x == MINO_START_X && currentMino.b[0].y == MINO_START_Y) {
+                gameOver = true;
+            }
+
+
             currentMino.deactivating = false;
 
             currentMino = nextMino;
@@ -111,6 +122,10 @@ public class PlayManager {
 
 //                we can delete the line if it has 12 blocks in line
                 if ( blocksCount == 12) {
+
+                    effectCounterOn = true;
+                    effectY.add(y);
+
                     for (int i = staticBlocks.size()-1; i > -1; i--) {
                         if (staticBlocks.get(i).y == y ) {
                             staticBlocks.remove(i);
@@ -156,14 +171,43 @@ public class PlayManager {
             staticBlocks.get(i).draw(g2);
         }
 
+//        Draw Effect
+        if (effectCounterOn) {
+            effectCounter++;
+
+            g2.setColor(Color.red);
+            for( int i = 0; i < effectY.size(); i++ ) {
+                g2.fillRect(left_x, effectY.get(i), WIDTH, Block.SIZE);
+
+            }
+
+            if(effectCounter == 10 ) {
+                effectCounterOn = false;
+                effectCounter = 0;
+                effectY.clear();
+            }
+        }
+
 //        Draw Pause
         g2.setColor(Color.yellow);
         g2.setFont(g2.getFont().deriveFont(50f));
+        if(gameOver) {
+            x = left_x+25;
+            y = top_y +320;
+            g2.drawString("GAME OVER", x, y);
+        }
+
         if(KeyHandler.pausePressed) {
             x = left_x + 70;
             y = top_y + 320;
             g2.drawString("PAUSED", x, y);
         }
+
+        x = 75;
+        y = top_y+ 320;
+        g2.setColor(Color.white);
+        g2.setFont(new Font("Times New Roman", Font.ITALIC, 60));
+        g2.drawString("TETRIS", x, y);
 
     }
 }
